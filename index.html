@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude 使用指南 2026 — 最新功能與實用技巧</title>
+<meta name="description" content="整理 2026 年最新的 Claude 使用方法：模型家族介紹、Claude.ai 功能、提示詞技巧、Claude Code 進階用法一次掌握。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14110f;
+    --bg-card: #1e1a17;
+    --bg-card-hover: #262019;
+    --border: #36302a;
+    --text: #ece7e1;
+    --text-dim: #a89f94;
+    --accent: #d97757;
+    --accent-soft: #e8a288;
+    --accent-bg: rgba(217, 119, 87, 0.12);
+    --green: #7fb069;
+    --blue: #6ca0dc;
+    --radius: 14px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body {
+    font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+  }
+  code, pre {
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.88em;
+  }
+  code {
+    background: var(--accent-bg);
+    color: var(--accent-soft);
+    padding: 2px 7px;
+    border-radius: 6px;
+  }
+  pre {
+    background: #0d0b09;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    margin: 14px 0;
+    line-height: 1.6;
+  }
+  pre code { background: none; padding: 0; color: #d8d3cb; }
+  a { color: var(--accent-soft); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(20, 17, 15, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 1080px; margin: 0 auto; padding: 0 24px;
+    display: flex; align-items: center; gap: 8px;
+    height: 60px; overflow-x: auto;
+  }
+  .nav-logo {
+    font-weight: 900; color: var(--accent); font-size: 1.05rem;
+    white-space: nowrap; margin-right: 12px;
+  }
+  nav a.nav-link {
+    color: var(--text-dim); font-size: 0.88rem; white-space: nowrap;
+    padding: 6px 12px; border-radius: 8px; transition: all .2s;
+  }
+  nav a.nav-link:hover { color: var(--text); background: var(--bg-card); text-decoration: none; }
+
+  /* Hero */
+  header {
+    max-width: 1080px; margin: 0 auto; padding: 90px 24px 60px;
+    text-align: center; position: relative;
+  }
+  .hero-badge {
+    display: inline-block; background: var(--accent-bg); color: var(--accent-soft);
+    border: 1px solid rgba(217,119,87,.35); border-radius: 999px;
+    padding: 5px 16px; font-size: 0.85rem; font-weight: 500; margin-bottom: 24px;
+  }
+  h1 {
+    font-size: clamp(2.2rem, 5.5vw, 3.6rem); font-weight: 900; line-height: 1.25;
+    background: linear-gradient(120deg, #f5f0ea 30%, var(--accent-soft) 70%, var(--accent));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+  }
+  .hero-sub {
+    color: var(--text-dim); font-size: 1.12rem; max-width: 640px; margin: 0 auto;
+  }
+  .hero-meta { margin-top: 28px; color: var(--text-dim); font-size: .85rem; }
+
+  /* Layout */
+  main { max-width: 1080px; margin: 0 auto; padding: 0 24px 80px; }
+  section { margin-bottom: 72px; }
+  h2 {
+    font-size: 1.75rem; font-weight: 700; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .sec-num {
+    color: var(--accent); font-size: 1rem; font-weight: 600;
+    font-family: "JetBrains Mono", monospace;
+  }
+  .sec-desc { color: var(--text-dim); margin-bottom: 28px; max-width: 720px; }
+  h3 { font-size: 1.15rem; font-weight: 700; margin: 24px 0 10px; color: var(--accent-soft); }
+
+  .grid { display: grid; gap: 16px; }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 22px 24px; transition: all .25s;
+  }
+  .card:hover { background: var(--bg-card-hover); border-color: #4a4138; transform: translateY(-2px); }
+  .card h4 { font-size: 1.02rem; font-weight: 700; margin-bottom: 8px; }
+  .card p { color: var(--text-dim); font-size: 0.92rem; }
+  .card .tag {
+    display: inline-block; font-size: 0.72rem; font-weight: 600; padding: 2px 10px;
+    border-radius: 999px; margin-bottom: 10px; letter-spacing: .03em;
+  }
+  .tag-new { background: rgba(127,176,105,.15); color: var(--green); }
+  .tag-hot { background: var(--accent-bg); color: var(--accent-soft); }
+  .tag-pro { background: rgba(108,160,220,.15); color: var(--blue); }
+
+  /* Model table */
+  table { width: 100%; border-collapse: collapse; font-size: 0.92rem; margin-top: 8px; }
+  th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  th { color: var(--text-dim); font-weight: 500; font-size: 0.82rem; }
+  td strong { color: var(--accent-soft); }
+  .table-wrap { overflow-x: auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; }
+
+  /* Tips list */
+  .tip {
+    display: flex; gap: 16px; background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px 24px; margin-bottom: 14px;
+  }
+  .tip-num {
+    flex-shrink: 0; width: 34px; height: 34px; border-radius: 10px;
+    background: var(--accent-bg); color: var(--accent); font-weight: 700;
+    display: flex; align-items: center; justify-content: center; font-size: 0.95rem;
+  }
+  .tip h4 { font-weight: 700; margin-bottom: 4px; }
+  .tip p { color: var(--text-dim); font-size: 0.92rem; }
+
+  .callout {
+    border-left: 3px solid var(--accent); background: var(--accent-bg);
+    border-radius: 0 10px 10px 0; padding: 14px 20px; margin: 18px 0;
+    font-size: 0.94rem; color: #e5d8cf;
+  }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 36px 24px; text-align: center;
+    color: var(--text-dim); font-size: 0.85rem;
+  }
+  footer .links { margin-bottom: 12px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+
+  @media (max-width: 640px) {
+    .tip { flex-direction: column; gap: 10px; }
+    header { padding: 56px 20px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <span class="nav-logo">✳ Claude 指南</span>
+    <a class="nav-link" href="#models">模型家族</a>
+    <a class="nav-link" href="#start">使用入口</a>
+    <a class="nav-link" href="#features">核心功能</a>
+    <a class="nav-link" href="#prompting">提示詞技巧</a>
+    <a class="nav-link" href="#claude-code">Claude Code</a>
+    <a class="nav-link" href="#advanced">進階技巧</a>
+    <a class="nav-link" href="#resources">資源</a>
+  </div>
+</nav>
+
+<header>
+  <div class="hero-badge">2026 年 6 月更新 · 含 Claude 5 家族最新資訊</div>
+  <h1>Claude 使用指南<br>最新功能與實用技巧</h1>
+  <p class="hero-sub">從模型選擇、日常對話到 Claude Code 進階工作流，一頁掌握 2026 年最新的 Claude 使用方法與高手技巧。</p>
+  <div class="hero-meta">非官方整理 · 內容依據 Anthropic 官方文件與社群最佳實踐</div>
+</header>
+
+<main>
+
+<!-- ============ 模型家族 ============ -->
+<section id="models">
+  <h2><span class="sec-num">01</span>認識 Claude 模型家族</h2>
+  <p class="sec-desc">2026 年 Anthropic 推出了全新的 Claude 5 家族，並持續更新 4.x 系列。選對模型是用好 Claude 的第一步。</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>模型</th><th>定位</th><th>適合場景</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Claude Fable 5</strong> <span class="tag tag-new">最新</span></td>
+          <td>Claude 5 家族首發，全新 Mythos 級模型，能力高於 Opus，為目前公開可用的最強模型</td>
+          <td>最複雜的推理、代理任務、長時間自主工作</td>
+        </tr>
+        <tr>
+          <td><strong>Claude Mythos 5</strong></td>
+          <td>與 Fable 5 同底層模型，僅開放給通過審核的組織</td>
+          <td>特定企業與研究用途</td>
+        </tr>
+        <tr>
+          <td><strong>Claude Opus 4.8</strong></td>
+          <td>2026 年 5 月發布，代理編碼、電腦操作、財務分析大幅提升</td>
+          <td>日常重度開發、複雜分析</td>
+        </tr>
+        <tr>
+          <td><strong>Claude Sonnet 4.6</strong></td>
+          <td>性價比主力，價格較上代大幅調降</td>
+          <td>大多數日常任務、產品整合</td>
+        </tr>
+        <tr>
+          <td><strong>Claude Haiku 4.5</strong></td>
+          <td>最快、最便宜</td>
+          <td>即時回應、大量批次處理、簡單分類</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>2026 年模型層面的重要更新</h3>
+  <div class="grid grid-3">
+    <div class="card">
+      <span class="tag tag-new">NEW</span>
+      <h4>Adaptive Thinking 自適應思考</h4>
+      <p>取代過去的 Extended Thinking。模型會依任務難度自動決定要不要深度推理，不再需要手動設定思考預算。</p>
+    </div>
+    <div class="card">
+      <span class="tag tag-new">NEW</span>
+      <h4>100 萬 Token 上下文</h4>
+      <p>Opus 4.6 與 Sonnet 4.6 的 1M token 長上下文已納入標準定價，可一次塞進整個程式碼庫或數百頁文件。</p>
+    </div>
+    <div class="card">
+      <span class="tag tag-hot">省錢</span>
+      <h4>價格大幅調降</h4>
+      <p>旗艦模型 API 價格降至 $5 / $25（每百萬 token 輸入/輸出），比上一代便宜約 67%，重度使用更划算。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 使用入口 ============ -->
+<section id="start">
+  <h2><span class="sec-num">02</span>三種使用入口</h2>
+  <p class="sec-desc">依照你的身分和需求，選擇最適合的方式開始。</p>
+  <div class="grid grid-3">
+    <div class="card">
+      <h4>🌐 Claude.ai（一般使用者）</h4>
+      <p>網頁版、手機 App（iOS / Android）、桌面 App。免費方案即可體驗，Pro / Max 方案解鎖更高用量與最強模型。直接到 <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a> 註冊即可。</p>
+    </div>
+    <div class="card">
+      <h4>⌨️ Claude Code（開發者）</h4>
+      <p>在終端機、桌面 App、IDE（VS Code / JetBrains）或網頁中運作的 AI 編程代理，能讀寫檔案、執行指令、操作 Git，自主完成完整開發任務。</p>
+    </div>
+    <div class="card">
+      <h4>🔌 Claude API（建構產品）</h4>
+      <p>透過 Anthropic API 把 Claude 整合到自己的應用，支援工具呼叫、串流、提示快取、批次處理與 MCP，也可經 AWS Bedrock、Google Vertex 使用。</p>
+    </div>
+  </div>
+  <pre><code># 安裝 Claude Code（需 Node.js 18+）
+npm install -g @anthropic-ai/claude-code
+
+# 在專案資料夾啟動
+cd 你的專案 && claude</code></pre>
+</section>
+
+<!-- ============ 核心功能 ============ -->
+<section id="features">
+  <h2><span class="sec-num">03</span>Claude.ai 核心功能</h2>
+  <p class="sec-desc">這些功能讓 Claude 不只是聊天機器人，而是完整的工作平台。</p>
+  <div class="grid grid-2">
+    <div class="card">
+      <span class="tag tag-hot">必學</span>
+      <h4>Projects 專案</h4>
+      <p>為長期工作建立專案，上傳背景資料當作知識庫，並設定自訂指示。之後每次對話 Claude 都記得這些脈絡，不用重複貼上。</p>
+    </div>
+    <div class="card">
+      <span class="tag tag-hot">必學</span>
+      <h4>Artifacts 即時產出</h4>
+      <p>請 Claude 做網頁、簡報、文件、互動小工具時，成品會在側邊視窗即時呈現，可以直接預覽、迭代修改，甚至發布分享給別人使用。</p>
+    </div>
+    <div class="card">
+      <h4>網頁搜尋與深入研究</h4>
+      <p>Claude 可以即時搜尋網路取得最新資訊；Research 功能會自動進行多輪搜尋與交叉比對，產出有引用來源的完整研究報告。</p>
+    </div>
+    <div class="card">
+      <h4>檔案與圖片理解</h4>
+      <p>直接拖放 PDF、Word、Excel、CSV、圖片進對話。Claude 能讀懂數百頁文件、分析表格資料、解讀圖表與截圖。</p>
+    </div>
+    <div class="card">
+      <span class="tag tag-new">NEW</span>
+      <h4>Claude Design</h4>
+      <p>2026 年 4 月由 Anthropic Labs 推出，可與 Claude 協作生成設計稿、原型與簡報等視覺作品。</p>
+    </div>
+    <div class="card">
+      <h4>連接器（Connectors / MCP）</h4>
+      <p>把 Google Drive、Notion、行事曆等服務接進 Claude，讓它直接讀取你的文件和資料來工作，不必手動複製貼上。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 提示詞技巧 ============ -->
+<section id="prompting">
+  <h2><span class="sec-num">04</span>提示詞（Prompt）技巧</h2>
+  <p class="sec-desc">同樣的問題，問法不同，結果天差地遠。這些是官方文件與社群驗證過最有效的技巧。</p>
+
+  <div class="tip">
+    <div class="tip-num">1</div>
+    <div>
+      <h4>明確、具體、給足脈絡</h4>
+      <p>把 Claude 當成「能力很強但不了解你背景的新同事」。說清楚目的、對象、限制條件。<br>❌「幫我寫一封信」 → ✅「幫我寫一封給房東的中文信，語氣禮貌但堅定，要求修理漏水的窗戶，提到已反映過兩次」。</p>
+    </div>
+  </div>
+  <div class="tip">
+    <div class="tip-num">2</div>
+    <div>
+      <h4>給範例（Few-shot）</h4>
+      <p>想要特定格式或風格時，直接給 1–3 個理想範例，比用文字描述有效得多。例如要整理資料時，先示範一筆你想要的輸出格式。</p>
+    </div>
+  </div>
+  <div class="tip">
+    <div class="tip-num">3</div>
+    <div>
+      <h4>用結構化標籤分隔內容</h4>
+      <p>長提示中用 XML 標籤把不同部分隔開，Claude 對這種結構特別敏銳：<code>&lt;文件&gt;...&lt;/文件&gt;</code>、<code>&lt;指示&gt;...&lt;/指示&gt;</code>、<code>&lt;範例&gt;...&lt;/範例&gt;</code>。</p>
+    </div>
+  </div>
+  <div class="tip">
+    <div class="tip-num">4</div>
+    <div>
+      <h4>長資料在前，指令在後</h4>
+      <p>處理長文件時，把文件內容放在提示的前面，你的問題和指令放在最後面，準確度會明顯提升。</p>
+    </div>
+  </div>
+  <div class="tip">
+    <div class="tip-num">5</div>
+    <div>
+      <h4>指定角色與輸出格式</h4>
+      <p>「你是一位資深的稅務會計師」這類角色設定能有效提升專業度；同時明確指定要表格、條列還是特定字數的段落。</p>
+    </div>
+  </div>
+  <div class="tip">
+    <div class="tip-num">6</div>
+    <div>
+      <h4>允許它說「不知道」</h4>
+      <p>加上「如果你不確定，請直接說不確定」可大幅減少幻覺（編造內容），在查核事實、引用文獻時特別重要。</p>
+    </div>
+  </div>
+  <div class="tip">
+    <div class="tip-num">7</div>
+    <div>
+      <h4>迭代修正，而不是砍掉重練</h4>
+      <p>第一次結果不滿意時，具體指出哪裡要改（「第二段太正式，改口語一點」），通常兩三輪就能收斂到理想結果。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Claude Code ============ -->
+<section id="claude-code">
+  <h2><span class="sec-num">05</span>Claude Code 使用方法</h2>
+  <p class="sec-desc">Claude Code 是開發者最強的生產力工具——它不只給建議，而是直接在你的專案中動手完成工作。</p>
+
+  <h3>常用指令速查</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>指令</th><th>功能</th></tr></thead>
+      <tbody>
+        <tr><td><code>/init</code></td><td>掃描專案並產生 CLAUDE.md 專案說明文件</td></tr>
+        <tr><td><code>/config</code></td><td>調整設定，包含回應風格（簡潔／詳細／技術）</td></tr>
+        <tr><td><code>/mcp</code></td><td>管理與驗證 MCP 伺服器連線</td></tr>
+        <tr><td><code>/compact</code></td><td>壓縮對話歷史，釋放上下文空間</td></tr>
+        <tr><td><code>/doctor</code></td><td>檢查安裝與環境問題</td></tr>
+        <tr><td><code>Shift+Tab</code></td><td>切換 Plan Mode（先規劃、不動手）與自動模式</td></tr>
+        <tr><td><code>Esc</code></td><td>隨時打斷 Claude，修正方向</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>核心工作流</h3>
+  <div class="grid grid-2">
+    <div class="card">
+      <span class="tag tag-hot">最重要</span>
+      <h4>先規劃，再執行（Plan Mode）</h4>
+      <p>複雜任務先用 Plan Mode 讓 Claude 提出完整方案，你確認方向沒錯再放行。修正一份計畫，遠比收拾寫到一半的錯誤程式容易。</p>
+    </div>
+    <div class="card">
+      <span class="tag tag-hot">最重要</span>
+      <h4>管理上下文（Context）</h4>
+      <p>上下文是最珍貴的資源。用量到 90% 時輸出品質會明顯下降——適時用 <code>/compact</code> 壓縮，或開新對話、把長期知識寫進 CLAUDE.md。</p>
+    </div>
+    <div class="card">
+      <h4>寫好 CLAUDE.md</h4>
+      <p>放在專案根目錄，記錄建置指令、程式風格、測試方式、注意事項。每次啟動自動載入，等於給 Claude 的「新人手冊」。</p>
+    </div>
+    <div class="card">
+      <h4>要求提出證據</h4>
+      <p>別讓 Claude 只說「完成了」——要求附上測試輸出、執行的指令與結果、或畫面截圖。看證據比自己重跑驗證快得多。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 進階技巧 ============ -->
+<section id="advanced">
+  <h2><span class="sec-num">06</span>進階技巧：Hooks、Skills、Subagents</h2>
+  <p class="sec-desc">2026 年的 Claude Code 已是完整的代理平台，這些功能讓它從「助手」升級為「可靠的自動化系統」。</p>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <span class="tag tag-pro">進階</span>
+      <h4>Hooks：100% 確定性的自動化</h4>
+      <p>在工具呼叫前後自動執行 shell 腳本。「每次改完檔案要跑 formatter」「禁止碰 production 設定」這類絕對不能漏的規則，做成 hook 而不是用嘴巴提醒。</p>
+    </div>
+    <div class="card">
+      <span class="tag tag-pro">進階</span>
+      <h4>Skills：可重用的工作流</h4>
+      <p>把你調教好的流程存成 Skill，之後情境符合時 Claude 會自動套用，不必每次重新解釋你的偏好和標準。</p>
+    </div>
+    <div class="card">
+      <span class="tag tag-pro">進階</span>
+      <h4>Subagents 子代理</h4>
+      <p>把搜尋、研究等支線任務派給子代理平行處理，保護主對話的上下文。搭配 Dynamic Workflows 可讓大型任務由數百個平行子代理協作完成。</p>
+    </div>
+    <div class="card">
+      <span class="tag tag-pro">進階</span>
+      <h4>MCP：連接萬物</h4>
+      <p>Model Context Protocol 讓 Claude 連上資料庫、瀏覽器、Slack、內部 API 等外部系統。用 <code>/mcp</code> 管理，生態系已有數千個現成伺服器。</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    💡 <strong>心法總結：</strong>把 Claude 當成有能力但需要好情報的隊友——給足脈絡、先對齊計畫、守住上下文品質、用 hooks 把鐵律自動化、用證據驗收成果。做到這五點，就超越了 90% 的使用者。
+  </div>
+</section>
+
+<!-- ============ 資源 ============ -->
+<section id="resources">
+  <h2><span class="sec-num">07</span>官方資源與延伸閱讀</h2>
+  <p class="sec-desc">建議以官方文件為準，社群文章作為實戰參考。</p>
+  <div class="grid grid-2">
+    <div class="card">
+      <h4>官方資源</h4>
+      <p>
+        <a href="https://claude.ai" target="_blank" rel="noopener">Claude.ai</a> — 開始使用 Claude<br>
+        <a href="https://code.claude.com/docs" target="_blank" rel="noopener">Claude Code 官方文件</a> — 安裝與完整功能說明<br>
+        <a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener">Claude Code 官方最佳實踐</a><br>
+        <a href="https://docs.claude.com" target="_blank" rel="noopener">Claude API 開發者文件</a><br>
+        <a href="https://www.anthropic.com/news" target="_blank" rel="noopener">Anthropic 官方新聞</a> — 模型發布資訊
+      </p>
+    </div>
+    <div class="card">
+      <h4>實戰參考</h4>
+      <p>
+        <a href="https://www.builder.io/blog/claude-code-tips-best-practices" target="_blank" rel="noopener">50 個 Claude Code 日常技巧</a><br>
+        <a href="https://marmelab.com/blog/2026/04/24/claude-code-tips-i-wish-id-had-from-day-one.html" target="_blank" rel="noopener">Claude Code：我希望第一天就知道的事</a><br>
+        <a href="https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/" target="_blank" rel="noopener">Hooks／Subagents／上下文管理進階技巧</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="links">
+    <a href="https://claude.ai" target="_blank" rel="noopener">Claude.ai</a>
+    <a href="https://code.claude.com/docs" target="_blank" rel="noopener">Claude Code Docs</a>
+    <a href="https://www.anthropic.com" target="_blank" rel="noopener">Anthropic</a>
+  </div>
+  <div>非官方使用指南 · 2026 年 6 月整理 · 以 Anthropic 官方資訊為準</div>
+</footer>
+
+</body>
+</html>

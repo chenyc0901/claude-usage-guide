@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slash 指令完整參考 — Claude 使用指南</title>
+<meta name="description" content="Claude Code 所有 slash command 的用法：對話管理、專案設定、帳號環境、開發工作流，以及如何自訂指令，繁體中文整理。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="../index.html">✳ Claude 指南</a>
+    <a class="nav-link" href="../index.html#resources">← 回所有指南</a>
+  </div>
+</nav>
+
+<main class="article">
+  <div class="crumb">官方資源中文整理</div>
+  <h1>Slash 指令完整參考</h1>
+  <p class="lead">在 Claude Code 對話框輸入 <code>/</code> 就會列出所有可用指令。這頁按用途分類整理每個指令的用法；版本更新很快，最權威的清單永遠是你終端機裡的 <code>/help</code>。</p>
+
+  <h2>💬 對話與上下文管理</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>指令</th><th>用法</th></tr></thead>
+      <tbody>
+        <tr><td><code>/clear</code></td><td>清空對話歷史，開始全新任務。換主題時必用，避免舊脈絡干擾。</td></tr>
+        <tr><td><code>/compact [指示]</code></td><td>把對話歷史壓縮成摘要，釋放上下文空間。可加指示控制保留什麼，例如 <code>/compact 保留 API 設計的討論</code>。</td></tr>
+        <tr><td><code>/context</code></td><td>視覺化目前上下文的使用狀況——哪些東西（系統提示、工具、MCP、對話）各佔多少 token。</td></tr>
+        <tr><td><code>/rewind</code></td><td>回溯到先前的檢查點（checkpoint），可以只還原對話、只還原程式碼、或兩者一起。改壞了想反悔時用。連按兩下 <code>Esc</code> 也能開啟。</td></tr>
+        <tr><td><code>/resume</code></td><td>列出過去的對話，選一個接著聊。終端機關掉了也找得回來。</td></tr>
+        <tr><td><code>/export</code></td><td>把目前對話匯出（複製到剪貼簿或存成檔案），方便分享或留檔。</td></tr>
+        <tr><td><code>/cost</code></td><td>顯示本次 session 的 token 用量與費用統計（API 計費使用者）。</td></tr>
+        <tr><td><code>/usage</code></td><td>查看訂閱方案（Pro / Max）的用量額度還剩多少。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>📁 專案與個人設定</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>指令</th><th>用法</th></tr></thead>
+      <tbody>
+        <tr><td><code>/init</code></td><td>掃描專案結構，自動產生 CLAUDE.md 專案說明文件。每個新專案的第一個指令。</td></tr>
+        <tr><td><code>/memory</code></td><td>開啟編輯器修改 memory 檔案（專案的 CLAUDE.md 或全域 <code>~/.claude/CLAUDE.md</code>）。也可以在訊息開頭打 <code>#</code> 快速把一條規則存進 memory。</td></tr>
+        <tr><td><code>/config</code></td><td>開啟設定介面：主題、回應風格、通知等。</td></tr>
+        <tr><td><code>/model</code></td><td>切換模型，例如 <code>/model opus</code>。複雜任務換強模型、簡單任務換快模型。</td></tr>
+        <tr><td><code>/permissions</code></td><td>檢視與編輯權限規則——把信任的指令（如 <code>npm test</code>）加進允許清單，減少確認彈窗。</td></tr>
+        <tr><td><code>/add-dir &lt;路徑&gt;</code></td><td>把另一個資料夾加入工作範圍，讓 Claude 同時操作多個專案目錄。</td></tr>
+        <tr><td><code>/hooks</code></td><td>互動式設定 hooks（工具執行前後自動跑的腳本），不用手寫 settings.json。</td></tr>
+        <tr><td><code>/agents</code></td><td>建立與管理自訂 subagent（子代理）——定義它的角色、可用工具與模型。</td></tr>
+        <tr><td><code>/output-style</code></td><td>切換輸出風格（簡潔／詳細解說等），也可建立自訂風格。</td></tr>
+        <tr><td><code>/statusline</code></td><td>自訂終端機底部的狀態列顯示內容。</td></tr>
+        <tr><td><code>/vim</code></td><td>開啟 vim 編輯模式，輸入框支援 vim 按鍵。</td></tr>
+        <tr><td><code>/terminal-setup</code></td><td>設定終端機按鍵綁定，讓 <code>Shift+Enter</code> 可以換行（iTerm2 / VS Code 終端機）。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>🔌 帳號、環境與擴充</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>指令</th><th>用法</th></tr></thead>
+      <tbody>
+        <tr><td><code>/login</code> / <code>/logout</code></td><td>登入／登出 Anthropic 帳號，或在多個帳號間切換。</td></tr>
+        <tr><td><code>/status</code></td><td>顯示目前狀態：帳號、模型、API 連線、工作目錄等。</td></tr>
+        <tr><td><code>/doctor</code></td><td>健康檢查——安裝、認證、MCP 連線有問題先跑這個。</td></tr>
+        <tr><td><code>/mcp</code></td><td>管理 MCP 伺服器：查看連線狀態、進行 OAuth 認證、檢視各伺服器提供的工具。</td></tr>
+        <tr><td><code>/plugin</code></td><td>瀏覽、安裝與管理插件（plugins）——一包裝好的指令、skills、MCP 與 hooks。</td></tr>
+        <tr><td><code>/fast</code></td><td>切換 Fast Mode（更快的輸出速度，適用 Opus 系列模型）。</td></tr>
+        <tr><td><code>/help</code></td><td>列出目前版本所有可用指令與快捷鍵——這頁的權威來源。</td></tr>
+        <tr><td><code>/bug</code></td><td>回報問題給 Anthropic，會自動附上對話脈絡。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>🛠 開發工作流</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>指令</th><th>用法</th></tr></thead>
+      <tbody>
+        <tr><td><code>/review</code></td><td>請 Claude 審查 pull request，指出問題與改進建議。</td></tr>
+        <tr><td><code>/code-review</code></td><td>對目前分支的修改做正確性與品質審查，可指定深度（low～max）。</td></tr>
+        <tr><td><code>/security-review</code></td><td>對目前分支的修改做安全審查（注入、權限、機密外洩等）。</td></tr>
+        <tr><td><code>/pr-comments</code></td><td>抓取目前 PR 上的審查留言進對話，直接請 Claude 逐條處理。</td></tr>
+        <tr><td><code>/install-github-app</code></td><td>安裝 GitHub App，讓你在 PR / issue 留言中 @claude 觸發 Claude 自動工作。</td></tr>
+        <tr><td><code>/todos</code></td><td>查看 Claude 目前的任務清單與進度。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>✨ 自訂你自己的 Slash 指令</h2>
+  <p>任何重複輸入的提示詞都可以做成自訂指令。建一個 Markdown 檔即可：</p>
+  <pre><code># .claude/commands/fix-issue.md（專案內共用，會進版控）
+# 或 ~/.claude/commands/fix-issue.md（個人全域）
+---
+description: 修復指定編號的 GitHub issue
+---
+
+請依照以下流程修復 issue #$ARGUMENTS：
+1. 用 gh issue view $ARGUMENTS 讀取問題描述
+2. 找出相關程式碼並修復
+3. 撰寫測試驗證
+4. 建立 commit，訊息註明 Fixes #$ARGUMENTS</code></pre>
+  <p>之後輸入 <code>/fix-issue 123</code>，<code>$ARGUMENTS</code> 就會被換成 <code>123</code>。要點：</p>
+  <ul>
+    <li><strong>位置決定範圍</strong>：<code>.claude/commands/</code> 是專案層級（團隊共用）；<code>~/.claude/commands/</code> 是個人層級（所有專案可用）。</li>
+    <li><strong>子資料夾即命名空間</strong>：<code>.claude/commands/frontend/component.md</code> 會顯示為 <code>/component (project:frontend)</code>。</li>
+    <li><strong>frontmatter 可加設定</strong>：<code>description</code>（指令說明）、<code>allowed-tools</code>（限制可用工具）、<code>model</code>（指定模型）。</li>
+    <li><strong>內容可以動態取材</strong>：在指令內容用 <code>!`git status`</code> 可在執行時嵌入 shell 指令輸出，用 <code>@檔名</code> 嵌入檔案內容。</li>
+  </ul>
+
+  <div class="callout">💡 <strong>經驗法則：</strong>同一段提示打過三次，就值得存成自訂指令；如果還希望 Claude 在情境符合時「自動」套用（不用你打指令），則做成 skill——見<a href="claude-code-advanced.html">進階篇</a>。</div>
+
+  <div class="source-note">本頁為繁體中文整理（2026 年 6 月）。原始出處：<a href="https://code.claude.com/docs/en/slash-commands" target="_blank" rel="noopener">Claude Code 官方文件 — Slash Commands</a>；指令清單隨版本更新，請以 <code>/help</code> 為準。</div>
+</main>
+
+<footer>
+  <div class="links">
+    <a href="../index.html">回指南首頁</a>
+    <a href="claude-code-docs.html">延伸閱讀：Claude Code 功能總覽</a>
+  </div>
+  <div>非官方使用指南 · 以 Anthropic 官方資訊為準</div>
+</footer>
+
+</body>
+</html>

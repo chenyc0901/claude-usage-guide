@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hooks、Subagents 與上下文進階 — Claude 使用指南</title>
+<meta name="description" content="Claude Code 進階三大功能：Hooks 確定性自動化、Skills 可重用工作流、Subagents 平行子代理與上下文工程，繁體中文整理。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="../index.html">✳ Claude 指南</a>
+    <a class="nav-link" href="../index.html#resources">← 回所有指南</a>
+  </div>
+</nav>
+
+<main class="article">
+  <div class="crumb">實戰技巧中文整理</div>
+  <h1>Hooks、Subagents 與上下文進階</h1>
+  <p class="lead">這三組功能是「會用」和「用得好」的分水嶺——它們把 Claude Code 從一個助手，變成可靠的自動化系統。</p>
+
+  <h2>1. Hooks：100% 確定性的自動化</h2>
+  <p>提示詞是「機率性」的——Claude 大多會照做，但偶爾會忘。Hooks 是「確定性」的——在指定事件發生時必定執行你的 shell 腳本，沒有例外。適合放鐵律：</p>
+  <ul>
+    <li>每次改完檔案自動跑 formatter / linter</li>
+    <li>阻止任何碰 <code>.env</code> 或 production 設定的操作</li>
+    <li>任務結束時發通知</li>
+  </ul>
+  <p>常用事件：<code>PreToolUse</code>（工具執行前，可攔截）、<code>PostToolUse</code>（執行後）、<code>SessionStart</code>、<code>Stop</code>。設定在 settings.json：</p>
+  <pre><code>// .claude/settings.json — 改完檔案自動格式化
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "npx prettier --write \"$CLAUDE_FILE_PATHS\"" }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+  <div class="callout">💡 <strong>判斷法則：</strong>「希望它做」的事寫在 CLAUDE.md；「絕對必須做／絕不能做」的事做成 hook。</div>
+
+  <h2>2. Skills：把調教好的流程存起來</h2>
+  <p>Skill 是一個資料夾加一份 <code>SKILL.md</code>，描述一個可重用的工作流。Claude 平常只看到它的一行簡介，情境符合時才載入完整內容——所以不佔上下文。</p>
+  <pre><code># .claude/skills/release/SKILL.md
+---
+name: release
+description: 發布新版本的標準流程
+---
+
+1. 確認所有測試通過（npm test）
+2. 更新 CHANGELOG.md 與版本號
+3. 建立 git tag 並推送
+4. 在 GitHub 建立 release，附上變更摘要</code></pre>
+  <p>使用時機：你已經教過 Claude 一次怎麼把事情做對（格式、步驟、標準），不想每個新對話重教一遍——存成 skill，之後自動套用。也可以打 <code>/skill名稱</code> 手動觸發。</p>
+
+  <h2>3. Subagents：平行子代理與上下文保護</h2>
+  <p>Subagent 是有獨立上下文的子代理。兩大用途：</p>
+  <ul>
+    <li><strong>保護主對話上下文</strong>：「用 subagent 搜尋整個 codebase 找出所有呼叫這個 API 的地方」——子代理讀了幾十個檔案，主對話只收到結論。</li>
+    <li><strong>平行作業</strong>：把互相獨立的子任務（讀多個檔案、跑多組測試、查多個來源）同時派給多個 subagent，大型任務甚至可由數百個平行子代理協作（Dynamic Workflows）。</li>
+  </ul>
+  <p>可以在 <code>.claude/agents/</code> 定義自訂 subagent（指定它的角色、工具與模型），例如一個只負責 code review 的審查代理。經驗法則：<strong>支線與可平行的工作交給 subagent；單檔閱讀、循序的工作自己做</strong>。</p>
+
+  <h2>4. 上下文工程（Context Engineering）</h2>
+  <p>把上下文當成預算來經營：</p>
+  <ul>
+    <li><strong>常駐成本最小化</strong>：CLAUDE.md 精簡、MCP 伺服器只開會用到的（每個都佔工具定義空間）。</li>
+    <li><strong>大量輸入隔離</strong>：探索、搜尋、讀大檔案走 subagent。</li>
+    <li><strong>定期釋放</strong>：<code>/compact</code> 帶指示壓縮；任務切換就 <code>/clear</code>。</li>
+    <li><strong>長期記憶外部化</strong>：跨對話要記住的事寫進 CLAUDE.md 或筆記檔，讓 Claude 自己維護一份「學到的教訓」文件效果很好。</li>
+  </ul>
+
+  <h2>5. 組合技：一個可靠的自動化系統長這樣</h2>
+  <ol>
+    <li>CLAUDE.md 定義專案知識與驗收標準（要求附證據）</li>
+    <li>Hooks 把 format、lint、敏感檔案保護做成鐵律</li>
+    <li>Skills 收錄發布、review、除錯的標準流程</li>
+    <li>Subagents 處理探索與平行工作，主對話保持乾淨</li>
+    <li>複雜任務一律 Plan Mode 先對齊，再放行執行</li>
+  </ol>
+
+  <div class="source-note">本頁為繁體中文整理。主要參考：<a href="https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/" target="_blank" rel="noopener">SmartScope：Claude Code Advanced Best Practices 2026</a>、<a href="https://code.claude.com/docs" target="_blank" rel="noopener">官方文件（Hooks / Skills / Subagents 章節）</a></div>
+</main>
+
+<footer>
+  <div class="links">
+    <a href="../index.html">回指南首頁</a>
+    <a href="claude-ai-getting-started.html">回到第一篇：Claude.ai 新手入門</a>
+  </div>
+  <div>非官方使用指南 · 以 Anthropic 官方資訊為準</div>
+</footer>
+
+</body>
+</html>

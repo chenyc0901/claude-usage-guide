@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第一天就該知道的事 — Claude 使用指南</title>
+<meta name="description" content="Claude Code 新手必備：快捷鍵、打斷與修正、檔案引用、權限設定，少走彎路的入門知識，繁體中文整理。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="../index.html">✳ Claude 指南</a>
+    <a class="nav-link" href="../index.html#resources">← 回所有指南</a>
+  </div>
+</nav>
+
+<main class="article">
+  <div class="crumb">實戰技巧中文整理</div>
+  <h1>第一天就該知道的事</h1>
+  <p class="lead">這些是許多人用了好幾週才發現、然後說「早知道就好了」的功能。第一天看完，少走幾週彎路。</p>
+
+  <h2>1. Shift+Tab 是最重要的快捷鍵</h2>
+  <p>它在三種模式間切換：<strong>一般模式</strong>（每個動作問你）→ <strong>自動接受編輯</strong>（改檔案不再逐次確認）→ <strong>Plan Mode</strong>（只研究和規劃、不動手）。新手最常見的錯誤是讓 Claude 在沒對齊方向前就開寫——複雜任務先進 Plan Mode。</p>
+
+  <h2>2. Esc 不是放棄，是方向盤</h2>
+  <ul>
+    <li>按一下 <code>Esc</code>：打斷正在進行的動作。看到它走錯路，立刻打斷加修正，比讓它走完便宜得多。</li>
+    <li>連按兩下 <code>Esc</code>：打開訊息歷史，可以跳回先前任何一句話重新編輯，從那個時間點分岔重來。</li>
+  </ul>
+
+  <h2>3. 引用檔案和執行指令有專門語法</h2>
+  <ul>
+    <li><code>@src/auth.ts</code> —— 在訊息中精準引用檔案（有自動補全），比讓它自己找快。</li>
+    <li><code>! npm test</code> —— 開頭加 <code>!</code> 直接執行 shell 指令，輸出自動進入對話脈絡。</li>
+    <li>直接把圖片拖進終端機 —— 設計稿、錯誤截圖它都看得懂。</li>
+  </ul>
+
+  <h2>4. /init 是新專案的第一個指令</h2>
+  <p>進到任何專案先跑 <code>/init</code>，讓 Claude 掃描程式碼並產生 CLAUDE.md。之後發現它重複犯同樣的錯（用錯套件管理器、忘記跑 lint），就把規則加進 CLAUDE.md——這比每次口頭提醒有效得多。</p>
+
+  <h2>5. 對話不是越長越好</h2>
+  <p>上下文（context）用量越高，輸出品質越差。換任務就 <code>/clear</code> 開新對話；長任務中途用 <code>/compact</code> 壓縮歷史。把「對話」當成暫存記憶，把「CLAUDE.md」當成長期記憶。</p>
+
+  <h2>6. 權限提示可以馴服</h2>
+  <p>一直跳出「允許執行嗎？」很煩，但別直接開最寬鬆模式。正確做法是把你信任的指令（<code>npm test</code>、<code>git diff</code> 這類唯讀或安全操作）加進 <code>.claude/settings.json</code> 的允許清單，危險操作保留確認。</p>
+
+  <h2>7. 讓它做完整任務，而不是一行一行問</h2>
+  <p>Claude Code 的強項是「自主完成完整任務」：給它一個 bug 報告，它會自己重現、定位、修復、跑測試。把它當成隊友交辦任務，而不是當成自動補全工具一行一行問。</p>
+
+  <h2>8. 它可以操作 Git，而且做得很好</h2>
+  <p>「commit 這些修改」「開一個 PR」「看一下這個 PR 的 diff 幫我 review」「找出這個 bug 是哪個 commit 引入的」——全部可以直接交辦。Claude 看得到完整 diff 與歷史，寫的 commit 訊息通常很完整。</p>
+
+  <h2>9. 卡住先問 /doctor 和 /help</h2>
+  <p>環境怪怪的（登入失效、MCP 連不上）先跑 <code>/doctor</code> 自我檢查；忘記有什麼指令就 <code>/help</code>。</p>
+
+  <h2>10. 第一週的合理期待</h2>
+  <ul>
+    <li>它會犯錯——所以才需要 Plan Mode、小步提交和證據驗收。</li>
+    <li>它的輸出品質高度取決於你給的脈絡品質——投資在 CLAUDE.md 和清楚的任務描述上，回報最大。</li>
+    <li>信任是漸進的——從小任務開始，熟了之後再交辦大型重構。</li>
+  </ul>
+
+  <div class="source-note">本頁為繁體中文整理。主要參考：<a href="https://marmelab.com/blog/2026/04/24/claude-code-tips-i-wish-id-had-from-day-one.html" target="_blank" rel="noopener">Marmelab：Claude Code Tips I Wish I'd Had From Day One</a>、<a href="https://code.claude.com/docs" target="_blank" rel="noopener">官方文件</a></div>
+</main>
+
+<footer>
+  <div class="links">
+    <a href="../index.html">回指南首頁</a>
+    <a href="claude-code-advanced.html">下一篇：Hooks、Subagents 與上下文進階</a>
+  </div>
+  <div>非官方使用指南 · 以 Anthropic 官方資訊為準</div>
+</footer>
+
+</body>
+</html>

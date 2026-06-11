@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code 官方最佳實踐 — Claude 使用指南</title>
+<meta name="description" content="Anthropic 官方建議的 Claude Code 工作流：探索、規劃、實作、提交，以及上下文管理心法，繁體中文整理。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="../index.html">✳ Claude 指南</a>
+    <a class="nav-link" href="../index.html#resources">← 回所有指南</a>
+  </div>
+</nav>
+
+<main class="article">
+  <div class="crumb">官方資源中文整理</div>
+  <h1>Claude Code 官方最佳實踐</h1>
+  <p class="lead">這些是 Anthropic 官方文件建議、也是內部工程師實際使用的工作方式。核心精神只有一句：<strong>把 Claude 當成能力很強、但需要好情報的隊友。</strong></p>
+
+  <h2>1. 標準工作流：探索 → 規劃 → 實作 → 提交</h2>
+  <ol>
+    <li><strong>探索（Explore）</strong>：先請 Claude 閱讀相關檔案、理解現況，明確說「先不要寫程式」。</li>
+    <li><strong>規劃（Plan）</strong>：用 Plan Mode（<code>Shift+Tab</code>）讓它提出完整方案。修正一份計畫，遠比收拾寫到一半的錯誤程式容易。</li>
+    <li><strong>實作（Code)</strong>：確認方向後放行。要求它邊做邊驗證（跑測試、檢查輸出）。</li>
+    <li><strong>提交（Commit）</strong>：讓 Claude 寫 commit 訊息、開 pull request。小步提交，出錯容易回滾。</li>
+  </ol>
+  <p>另一個官方推薦的變形是 <strong>測試驅動（TDD）</strong>：先請 Claude 依需求寫測試（此時測試應該失敗），確認測試合理後，再請它實作到測試全過。這給了它明確的成功標準。</p>
+
+  <h2>2. 上下文（Context）是最珍貴的資源</h2>
+  <p>幾乎所有最佳實踐都源自同一個限制：<strong>上下文視窗會被填滿，而且用量越高品質越差。</strong>用量到 90% 時，重要指示會被淹沒，模型開始犯錯。對策：</p>
+  <ul>
+    <li>一個任務一個對話；換任務就 <code>/clear</code>。</li>
+    <li>長對話適時 <code>/compact</code>，並可指示保留重點（「壓縮時保留 API 設計的討論」）。</li>
+    <li>長期知識寫進 CLAUDE.md，不要靠對話記憶。</li>
+    <li>探索和搜尋類的支線任務交給 subagent，保護主對話的上下文。</li>
+  </ul>
+
+  <h2>3. 給足脈絡，講清楚目標</h2>
+  <ul>
+    <li><strong>具體的指示得到具體的結果</strong>：「修掉 foo.py 第 12 行的 off-by-one 錯誤」優於「修 bug」。</li>
+    <li><strong>提供視覺參考</strong>：做 UI 時直接貼設計稿截圖，Claude 看得懂圖。</li>
+    <li><strong>說明「為什麼」</strong>：講出任務背後的意圖，Claude 會把任務和相關資訊連起來，做出更對的判斷。</li>
+  </ul>
+
+  <h2>4. 驗收要看證據</h2>
+  <p>別讓 Claude 只說「完成了」——要求它附上證據：測試輸出、執行的指令與結果、畫面截圖。看證據比自己重跑驗證快得多。把這條寫進 CLAUDE.md，一勞永逸。</p>
+
+  <h2>5. 把鐵律交給 Hooks，不要靠嘴巴提醒</h2>
+  <p>「每次改完檔案要跑 formatter」「禁止碰 production 設定」這類絕對不能漏的規則，用 hooks 做成 100% 確定性的自動化，而不是寫在提示裡祈禱它記得。設定方式見<a href="claude-code-advanced.html">進階篇</a>。</p>
+
+  <h2>6. 平行作業：多開 Claude</h2>
+  <p>進階用法是用 <code>git worktree</code> 開多個工作副本，每個副本跑一個 Claude 處理不同任務，互不干擾：</p>
+  <pre><code>git worktree add ../專案-功能A feature-a
+cd ../專案-功能A && claude</code></pre>
+  <p>也可以用 headless 模式（<code>claude -p "任務描述"</code>）把 Claude Code 嵌進 CI 或自動化腳本。</p>
+
+  <h2>7. 勇於打斷和修正</h2>
+  <p>看到方向不對，立刻按 <code>Esc</code> 打斷，說明哪裡錯了。連按兩下 <code>Esc</code> 可以回到先前的訊息重新編輯——比讓它走完錯路再重來省得多。</p>
+
+  <div class="callout">💡 <strong>一句話總結：</strong>給足脈絡 → 先對齊計畫 → 守住上下文品質 → 用 hooks 自動化鐵律 → 用證據驗收。做到這五點，就超越了 90% 的使用者。</div>
+
+  <div class="source-note">本頁為繁體中文整理。原始出處：<a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener">Claude Code 官方最佳實踐（code.claude.com）</a></div>
+</main>
+
+<footer>
+  <div class="links">
+    <a href="../index.html">回指南首頁</a>
+    <a href="claude-api.html">下一篇：Claude API 開發者入門</a>
+  </div>
+  <div>非官方使用指南 · 以 Anthropic 官方資訊為準</div>
+</footer>
+
+</body>
+</html>

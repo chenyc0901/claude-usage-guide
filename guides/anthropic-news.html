@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anthropic 模型發布時間線 — Claude 使用指南</title>
+<meta name="description" content="2025–2026 年 Anthropic 重要發布整理：從 Claude 4.5 系列到 Claude 5 家族（Fable / Mythos），繁體中文時間線。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="../index.html">✳ Claude 指南</a>
+    <a class="nav-link" href="../index.html#resources">← 回所有指南</a>
+  </div>
+</nav>
+
+<main class="article">
+  <div class="crumb">官方資源中文整理</div>
+  <h1>Anthropic 模型發布時間線</h1>
+  <p class="lead">過去一年半 Anthropic 的重要發布，看懂 Claude 家族怎麼演進到今天。</p>
+
+  <h2>2026 年</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>時間</th><th>發布</th><th>重點</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>2026 年</td>
+          <td><strong>Claude 5 家族：Fable 5 / Mythos 5</strong></td>
+          <td>全新 Mythos 級模型層，定位高於 Opus。Fable 5 為公開可用的最強模型；Mythos 5 同底層模型，僅開放通過審核的組織。思考（thinking）永遠開啟、原始思考鏈不對外揭露、全新 tokenizer、1M 上下文 / 128K 輸出。</td>
+        </tr>
+        <tr>
+          <td>2026 / 5 / 28</td>
+          <td><strong>Claude Opus 4.8</strong></td>
+          <td>Opus 級最強版本。長時間自主代理工作、知識工作與記憶能力大幅提升，文風更清晰溫暖。新增 session 中途系統提示（mid-session system prompts，beta）。</td>
+        </tr>
+        <tr>
+          <td>2026 / 4 / 17</td>
+          <td><strong>Claude Design</strong>（Anthropic Labs）</td>
+          <td>與 Claude 協作生成設計稿、原型與簡報等視覺作品。</td>
+        </tr>
+        <tr>
+          <td>2026 / 3 / 14</td>
+          <td><strong>1M 上下文納入標準定價</strong></td>
+          <td>Opus 4.6 與 Sonnet 4.6 的 100 萬 token 上下文不再需要 beta header，也沒有長上下文加價。</td>
+        </tr>
+        <tr>
+          <td>2026 / 3</td>
+          <td><strong>Claude Opus 4.7</strong></td>
+          <td>移除 <code>budget_tokens</code> 與取樣參數，新增 <code>xhigh</code> effort 等級與 Task Budgets（beta）、高解析度視覺（2576px）。</td>
+        </tr>
+        <tr>
+          <td>2026 / 2 / 17</td>
+          <td><strong>Claude Sonnet 4.6</strong></td>
+          <td>性價比主力。Adaptive thinking、effort 參數正式版（GA）。</td>
+        </tr>
+        <tr>
+          <td>2026 / 2 / 5</td>
+          <td><strong>Claude Opus 4.6</strong></td>
+          <td>旗艦價格降至 $5 / $25（每百萬 token），比上一代便宜約 67%。Adaptive Thinking 開始取代 Extended Thinking。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>2025 年（背景）</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>時間</th><th>發布</th><th>重點</th></tr></thead>
+      <tbody>
+        <tr><td>2025 / 11</td><td>Claude Opus 4.5</td><td>當時最強模型，effort 參數首次登場</td></tr>
+        <tr><td>2025 / 10</td><td>Claude Haiku 4.5</td><td>小模型大躍進，速度與性價比之王</td></tr>
+        <tr><td>2025 / 9</td><td>Claude Sonnet 4.5</td><td>當時最強的編程模型，Claude Code 同步大改版</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>怎麼解讀這條時間線</h2>
+  <ul>
+    <li><strong>「思考」的演進</strong>：手動設定思考預算（Extended Thinking）→ 模型自行決定（Adaptive Thinking）→ Fable 5 思考永遠開啟。趨勢是把調參的負擔從開發者移回模型。</li>
+    <li><strong>價格持續下探、上下文持續變大</strong>：旗艦能力一年內降價三分之二，1M 上下文成為標配。</li>
+    <li><strong>產品線分層更清楚</strong>：Haiku（快與便宜）→ Sonnet（性價比）→ Opus（重度工作）→ Mythos 級（能力天花板）。</li>
+  </ul>
+
+  <div class="callout">💡 模型更新很快，這頁內容整理至 2026 年 6 月。最新發布請以 <a href="https://www.anthropic.com/news" target="_blank" rel="noopener">Anthropic 官方新聞</a>為準。</div>
+
+  <div class="source-note">本頁為繁體中文整理。原始出處：<a href="https://www.anthropic.com/news" target="_blank" rel="noopener">Anthropic News（anthropic.com/news）</a>、<a href="https://platform.claude.com/docs/en/about-claude/models/overview" target="_blank" rel="noopener">官方模型總覽文件</a></div>
+</main>
+
+<footer>
+  <div class="links">
+    <a href="../index.html">回指南首頁</a>
+    <a href="claude-code-50-tips.html">下一篇：日常技巧精選</a>
+  </div>
+  <div>非官方使用指南 · 以 Anthropic 官方資訊為準</div>
+</footer>
+
+</body>
+</html>

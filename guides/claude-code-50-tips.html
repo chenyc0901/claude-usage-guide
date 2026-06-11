@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code 日常技巧精選 — Claude 使用指南</title>
+<meta name="description" content="按情境分類的 Claude Code 日常實用技巧：提問、上下文管理、自動化與驗收，繁體中文整理。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="../index.html">✳ Claude 指南</a>
+    <a class="nav-link" href="../index.html#resources">← 回所有指南</a>
+  </div>
+</nav>
+
+<main class="article">
+  <div class="crumb">實戰技巧中文整理</div>
+  <h1>Claude Code 日常技巧精選</h1>
+  <p class="lead">從社群上百個技巧中精選出每天都用得到的，按情境分類。每一條都很短，挑有感的先用。</p>
+
+  <h2>📝 提問與交辦</h2>
+  <ul>
+    <li><strong>說目標，不只說步驟</strong>：講出任務背後的意圖（「使用者反映結帳很慢」），Claude 會做出比逐步指令更好的判斷。</li>
+    <li><strong>一次給齊規格</strong>：把需求、限制、驗收標準在第一句話講完，比擠牙膏式追加修改省一半 token 和時間。</li>
+    <li><strong>貼錯誤訊息全文</strong>：不要描述錯誤，直接貼 stack trace 全文。</li>
+    <li><strong>貼截圖</strong>：UI 問題直接拖圖片進終端機，Claude 看得懂畫面。</li>
+    <li><strong>用 <code>@檔名</code> 精準指路</strong>：知道問題在哪個檔案就直接指名，省掉它自己摸索的時間。</li>
+  </ul>
+
+  <h2>🧠 上下文管理</h2>
+  <ul>
+    <li><strong>一個任務一個對話</strong>：換主題就 <code>/clear</code>，混在一起品質會掉。</li>
+    <li><strong>在長任務前先 <code>/compact</code></strong>：別等上下文爆了才壓縮。</li>
+    <li><strong>給 <code>/compact</code> 指示</strong>：「壓縮時保留資料庫 schema 的討論」可以控制留下什麼。</li>
+    <li><strong>CLAUDE.md 保持精簡</strong>：它每次對話都載入，肥大的 CLAUDE.md 就是長期的上下文稅。</li>
+    <li><strong>大範圍搜尋交給 subagent</strong>：「用 subagent 找出所有用到這個 API 的地方」，主對話只收結論。</li>
+  </ul>
+
+  <h2>⚙️ 流程與自動化</h2>
+  <ul>
+    <li><strong>複雜任務必走 Plan Mode</strong>：<code>Shift+Tab</code>，先看計畫再放行。</li>
+    <li><strong>格式化交給 hooks</strong>：PostToolUse hook 自動跑 formatter，從此不用提醒。</li>
+    <li><strong>重複的流程存成 skill</strong>：調教好的工作流（如「發布版本的標準步驟」）存成 skill，下次自動套用。</li>
+    <li><strong>常用核可寫進權限白名單</strong>：在 settings.json 允許 <code>npm test</code>、<code>git status</code> 這類安全指令，減少打斷。</li>
+    <li><strong>用 <code>!</code> 直接跑指令</strong>：<code>! npm test</code> 的輸出會進入對話脈絡，比自己貼結果快。</li>
+    <li><strong>讓它寫 commit</strong>：Claude 看得到完整 diff，寫的 commit 訊息常比你自己寫的完整。</li>
+  </ul>
+
+  <h2>✅ 驗收與品質</h2>
+  <ul>
+    <li><strong>要求證據</strong>：「跑測試並貼出輸出」「截圖給我看」——看證據比口頭「完成了」可靠。</li>
+    <li><strong>讓它自我檢查</strong>：做完後問「重新審視這段修改，有沒有遺漏的邊界情況？」常能抓到問題。</li>
+    <li><strong>用乾淨的眼睛審查</strong>：開新對話（或 subagent）審查剛寫好的程式碼，避免「自己改自己看」的盲點。</li>
+    <li><strong>小步提交</strong>：每完成一個邏輯單位就 commit，出問題容易回滾。</li>
+    <li><strong>看到不對勁立刻 <code>Esc</code></strong>：打斷加修正，永遠比走完錯路便宜。</li>
+  </ul>
+
+  <h2>🚀 進階一點</h2>
+  <ul>
+    <li><strong>git worktree 平行開工</strong>：多個工作副本各跑一個 Claude，互不干擾。</li>
+    <li><strong>headless 模式進 CI</strong>：<code>claude -p "檢查這個 PR 的安全問題"</code> 可嵌進自動化流程。</li>
+    <li><strong>把常見問答寫進 CLAUDE.md</strong>：發現 Claude 重複犯同一個錯，就把正確做法寫進 CLAUDE.md，從此根治。</li>
+    <li><strong>連按兩下 <code>Esc</code> 回溯歷史</strong>：回到先前的訊息重新編輯，分岔出不同方向。</li>
+  </ul>
+
+  <div class="source-note">本頁為繁體中文整理，內容綜合自社群最佳實踐。主要參考：<a href="https://www.builder.io/blog/claude-code-tips-best-practices" target="_blank" rel="noopener">Builder.io：50 Claude Code Tips</a>、<a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener">官方最佳實踐</a></div>
+</main>
+
+<footer>
+  <div class="links">
+    <a href="../index.html">回指南首頁</a>
+    <a href="claude-code-day-one.html">下一篇：第一天就該知道的事</a>
+  </div>
+  <div>非官方使用指南 · 以 Anthropic 官方資訊為準</div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude API 開發者入門 — Claude 使用指南</title>
+<meta name="description" content="Claude API 入門：取得 API key、第一個請求、2026 最新模型 ID 與價格、Adaptive Thinking 與 Prompt Caching，繁體中文整理。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="../index.html">✳ Claude 指南</a>
+    <a class="nav-link" href="../index.html#resources">← 回所有指南</a>
+  </div>
+</nav>
+
+<main class="article">
+  <div class="crumb">官方資源中文整理</div>
+  <h1>Claude API 開發者入門</h1>
+  <p class="lead">想把 Claude 整合進自己的產品？這篇整理 2026 年中最新的模型 ID、價格與基本用法。</p>
+
+  <h2>1. 取得 API Key</h2>
+  <p>到 <a href="https://platform.claude.com" target="_blank" rel="noopener">platform.claude.com</a>（Claude 開發者平台）註冊，建立 API key，設成環境變數：</p>
+  <pre><code>export ANTHROPIC_API_KEY="sk-ant-..."</code></pre>
+  <p>除了直接呼叫 Anthropic API，也可以透過 AWS（Bedrock 或 Claude Platform on AWS）、Google Vertex AI 使用。</p>
+
+  <h2>2. 模型 ID 與價格（2026 年 6 月）</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>模型</th><th>Model ID</th><th>上下文</th><th>輸入 / 輸出（每百萬 token）</th></tr></thead>
+      <tbody>
+        <tr><td>Claude Fable 5</td><td><code>claude-fable-5</code></td><td>1M</td><td>$10 / $50</td></tr>
+        <tr><td>Claude Opus 4.8</td><td><code>claude-opus-4-8</code></td><td>1M</td><td>$5 / $25</td></tr>
+        <tr><td>Claude Sonnet 4.6</td><td><code>claude-sonnet-4-6</code></td><td>1M</td><td>$3 / $15</td></tr>
+        <tr><td>Claude Haiku 4.5</td><td><code>claude-haiku-4-5</code></td><td>200K</td><td>$1 / $5</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>一般建議以 <code>claude-opus-4-8</code> 為預設；最難的推理與長時間代理任務用 <code>claude-fable-5</code>（注意它採用新 tokenizer，同樣內容約多 30% token）；大量便宜的簡單任務用 Haiku。注意 model ID 不要自己加日期後綴。</p>
+
+  <h2>3. 第一個請求</h2>
+  <pre><code># Python（pip install anthropic）
+import anthropic
+
+client = anthropic.Anthropic()  # 自動讀取 ANTHROPIC_API_KEY
+
+response = client.messages.create(
+    model="claude-opus-4-8",
+    max_tokens=16000,
+    messages=[{"role": "user", "content": "用繁體中文介紹一下你自己"}],
+)
+for block in response.content:
+    if block.type == "text":
+        print(block.text)</code></pre>
+  <pre><code># cURL
+curl https://api.anthropic.com/v1/messages \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{
+    "model": "claude-opus-4-8",
+    "max_tokens": 16000,
+    "messages": [{"role": "user", "content": "你好，Claude"}]
+  }'</code></pre>
+
+  <h2>4. 2026 年的重要 API 變化</h2>
+  <ul>
+    <li><strong>Adaptive Thinking 取代固定思考預算</strong>：新模型（Opus 4.7+ / Fable 5）已移除 <code>budget_tokens</code>，改用 <code>thinking: {"type": "adaptive"}</code>，由模型自行決定思考深度。Fable 5 的思考永遠開啟，直接省略 <code>thinking</code> 參數即可。</li>
+    <li><strong>Effort 參數</strong>：用 <code>output_config: {"effort": "low" | "medium" | "high" | "xhigh" | "max"}</code> 調整深度與成本的平衡。編程與代理任務建議 <code>high</code> 或 <code>xhigh</code>。</li>
+    <li><strong>取樣參數移除</strong>：Opus 4.7+ 不再接受 <code>temperature</code> / <code>top_p</code> / <code>top_k</code>，改用提示詞引導風格。</li>
+    <li><strong>結構化輸出</strong>：用 <code>output_config.format</code> 搭配 JSON Schema 保證回傳合法 JSON（取代過去的 assistant prefill 技巧）。</li>
+  </ul>
+
+  <h2>5. 省錢三招</h2>
+  <ul>
+    <li><strong>Prompt Caching</strong>：在穩定的長前綴（系統提示、大文件）加上 <code>cache_control: {"type": "ephemeral"}</code>，重複內容以約 0.1 倍價格計費，最多省 90%。注意快取是「前綴比對」——前綴中任何一個 byte 改變（例如時間戳）都會讓快取失效。</li>
+    <li><strong>Batches API</strong>：不急的批次任務走 <code>/v1/messages/batches</code>，全部 token 半價，多數批次一小時內完成。</li>
+    <li><strong>選對模型</strong>：分類、抽取這類簡單任務用 Haiku，價格是 Opus 的五分之一。</li>
+  </ul>
+
+  <h2>6. 其他重要功能</h2>
+  <ul>
+    <li><strong>Streaming</strong>：長輸出務必用串流（SDK 的 <code>messages.stream()</code>），避免逾時。</li>
+    <li><strong>Tool Use</strong>：定義工具讓 Claude 呼叫你的函式；SDK 的 tool runner 會自動處理整個代理迴圈。</li>
+    <li><strong>Vision 與 PDF</strong>：訊息中可直接附圖片與 PDF 文件。</li>
+    <li><strong>Managed Agents（beta）</strong>：由 Anthropic 代管代理迴圈與沙盒容器的全託管代理服務。</li>
+  </ul>
+
+  <div class="source-note">本頁為繁體中文整理。原始出處：<a href="https://platform.claude.com/docs" target="_blank" rel="noopener">Claude 開發者文件（platform.claude.com/docs）</a></div>
+</main>
+
+<footer>
+  <div class="links">
+    <a href="../index.html">回指南首頁</a>
+    <a href="anthropic-news.html">下一篇：模型發布時間線</a>
+  </div>
+  <div>非官方使用指南 · 以 Anthropic 官方資訊為準</div>
+</footer>
+
+</body>
+</html>

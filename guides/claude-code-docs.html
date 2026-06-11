@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code 安裝與功能總覽 — Claude 使用指南</title>
+<meta name="description" content="Claude Code 完整功能地圖：安裝、常用指令、CLAUDE.md、settings.json 與 MCP，繁體中文整理。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="../index.html">✳ Claude 指南</a>
+    <a class="nav-link" href="../index.html#resources">← 回所有指南</a>
+  </div>
+</nav>
+
+<main class="article">
+  <div class="crumb">官方資源中文整理</div>
+  <h1>Claude Code 安裝與功能總覽</h1>
+  <p class="lead">Claude Code 是在你電腦上運作的 AI 編程代理（coding agent）——它能讀寫檔案、執行指令、操作 Git，自主完成完整的開發任務，而不只是給建議。</p>
+
+  <h2>1. 安裝</h2>
+  <pre><code># 方式一：npm（需 Node.js 18+）
+npm install -g @anthropic-ai/claude-code
+
+# 方式二：原生安裝（macOS / Linux）
+curl -fsSL https://claude.ai/install.sh | bash
+
+# 啟動：在專案資料夾執行
+cd 你的專案
+claude</code></pre>
+  <p>第一次啟動會引導你登入（用 Claude.ai 訂閱帳號或 API key 皆可）。除了終端機，Claude Code 也有 <strong>桌面 App</strong>（Mac／Windows）、<strong>網頁版</strong>（claude.ai/code）與 <strong>IDE 擴充</strong>（VS Code、JetBrains），登入同一帳號即可共用設定。</p>
+
+  <h2>2. 基本操作模式</h2>
+  <ul>
+    <li><strong>直接交辦任務</strong>：用自然語言描述要做的事，例如「幫我修掉登入頁面的 bug，重現步驟是……」。Claude 會自己探索程式碼、修改、執行測試。</li>
+    <li><strong>Plan Mode</strong>：按 <code>Shift+Tab</code> 切換。在這個模式下 Claude 只會研究和提出計畫、不動手改任何檔案，等你確認後再執行。複雜任務強烈建議先走這一步。</li>
+    <li><strong>權限模式</strong>：預設每個有風險的動作（執行指令、改檔案）都會先問你；信任後可以調整為自動接受編輯，加快流程。</li>
+  </ul>
+
+  <h2>3. 常用指令與快捷鍵</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>指令</th><th>功能</th></tr></thead>
+      <tbody>
+        <tr><td><code>/init</code></td><td>掃描專案、自動產生 CLAUDE.md 專案說明文件</td></tr>
+        <tr><td><code>/config</code></td><td>開啟設定（回應風格、主題、模型等）</td></tr>
+        <tr><td><code>/compact</code></td><td>壓縮對話歷史，釋放上下文（context）空間</td></tr>
+        <tr><td><code>/clear</code></td><td>清空對話，開始全新任務</td></tr>
+        <tr><td><code>/mcp</code></td><td>管理與驗證 MCP 伺服器</td></tr>
+        <tr><td><code>/doctor</code></td><td>檢查安裝與環境問題</td></tr>
+        <tr><td><code>/help</code></td><td>列出所有可用指令</td></tr>
+        <tr><td><code>Shift+Tab</code></td><td>切換 Plan Mode 與自動接受模式</td></tr>
+        <tr><td><code>Esc</code></td><td>隨時打斷 Claude；連按兩下可回到歷史訊息重新編輯</td></tr>
+        <tr><td><code>@檔名</code></td><td>在訊息中精準引用特定檔案</td></tr>
+        <tr><td><code>!指令</code></td><td>直接執行 shell 指令，輸出會進入對話脈絡</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>4. CLAUDE.md：給 Claude 的專案手冊</h2>
+  <p>放在專案根目錄的 <code>CLAUDE.md</code> 會在每次啟動時自動載入，等於給 Claude 的「新人手冊」。建議記錄：</p>
+  <ul>
+    <li>建置與測試指令（<code>npm run build</code>、<code>pytest</code> 等）</li>
+    <li>程式碼風格與命名慣例</li>
+    <li>專案架構重點、不能碰的地方</li>
+    <li>常見地雷與注意事項</li>
+  </ul>
+  <p>另外有 <code>~/.claude/CLAUDE.md</code>（全域、所有專案都載入）可放個人偏好。保持精簡——它佔用每次對話的上下文。</p>
+
+  <h2>5. 設定與擴充</h2>
+  <ul>
+    <li><strong>settings.json</strong>：<code>.claude/settings.json</code>（專案）與 <code>~/.claude/settings.json</code>（全域），管理權限白名單、環境變數、hooks。</li>
+    <li><strong>MCP（Model Context Protocol）</strong>：連接外部工具——資料庫、瀏覽器、Slack、內部 API。用 <code>claude mcp add</code> 或 <code>/mcp</code> 管理，生態系已有數千個現成伺服器。</li>
+    <li><strong>Skills 與 Subagents</strong>：可重用工作流與平行子代理，詳見<a href="claude-code-advanced.html">進階篇</a>。</li>
+  </ul>
+
+  <div class="callout">💡 下一步：讀<a href="claude-code-best-practices.html">官方最佳實踐</a>學工作流，或看<a href="claude-code-day-one.html">第一天就該知道的事</a>快速上手。</div>
+
+  <div class="source-note">本頁為繁體中文整理。原始出處：<a href="https://code.claude.com/docs" target="_blank" rel="noopener">Claude Code 官方文件（code.claude.com/docs）</a></div>
+</main>
+
+<footer>
+  <div class="links">
+    <a href="../index.html">回指南首頁</a>
+    <a href="claude-code-best-practices.html">下一篇：官方最佳實踐</a>
+  </div>
+  <div>非官方使用指南 · 以 Anthropic 官方資訊為準</div>
+</footer>
+
+</body>
+</html>
